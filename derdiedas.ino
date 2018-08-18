@@ -4,11 +4,16 @@ const int derPin = 5;
 const int diePin = 6;
 const int dasPin = 7;
 
-const char* derWords[] = {"Hund", "Mann", "Schlussel"};
-const char* dieWords[] = {"Arbeit", "Frau", "Zeit", "Wohnung"};
-const char* dasWords[] = {"Baby", "Auto", "Kind", "Fleisch"};
+const String derWords[] = {"Hund", "Mann", "Schlussel", "Computer", "Artz"};
+const String dieWords[] = {"Arbeit", "Frau", "Zeit", "Wohnung"};
+const String dasWords[] = {"Baby", "Auto", "Kind", "Fleisch", "Land", "Kino", "Handy"};//, "Wörterbuch"};
+int noDer = sizeof(derWords);
+int noDie = sizeof(dieWords);
+int noDas = sizeof(dasWords);
 
 bool needNewWord = true;
+String currentWord="";
+int gender;
 
 LiquidCrystal_I2C lcd(0x3F, 16, 4);
 
@@ -24,38 +29,70 @@ void setup() {
   lcd.setCursor(0, 0);
 }
 
+const String getWordForGender(int gender) {
 
-const char * getWordForGender(int gender) {
+  Serial.print("getting word for: ");
 
-  const char** words = dieWords;
+  Serial.println(gender);
+  
+  if (gender == 0)
+  {
+      derWords[random(noDer)];  
+  }
+  else if (gender == 1)
+  {
+    return dieWords[random(noDie)];
+  }
+  else if (gender == 2)
+  {
+    return dasWords[random(noDas)];
+  }
 
-  if (gender != 2)
-    words = gender ? dasWords : dasWords;
-
-  int numberOfWords = sizeof(words);
-
-  Serial.println(numberOfWords);
-
-  return words[random(numberOfWords)];
+  
 }
+
+void printOnLcd(String toPrint)
+{
+    lcd.clear();
+    lcd.setCursor(3, 1);
+    lcd.print(toPrint);
+  
+}
+
 
 void loop() {
 
-  int gender = random(3);
-
   if (needNewWord) {
-    const char * w = getWordForGender(gender);
-    lcd.clear();
-    lcd.setCursor(1,0);
-    lcd.print(w);
-    needNewWord = false; 
+    gender = random(3);   
+    Serial.print("Random gender is: ");  
+    Serial.println(gender);     
+    currentWord = getWordForGender(gender);
+    Serial.print("the word is: ");
+    Serial.println(currentWord);
+    printOnLcd(currentWord);
+    needNewWord = false;
   }
-
-  if (digitalRead(dasPin) == HIGH)
-    lcd.print("green");
-  else if (digitalRead(derPin) == HIGH)
-    lcd.print("blue");
+  int selectedGender = -1;
+  if (digitalRead(derPin) == HIGH)
+    selectedGender = 0;
   else if (digitalRead(diePin) == HIGH)
-    lcd.print("red");
-  delay(3000);
+    selectedGender = 1;
+  else if (digitalRead(dasPin) == HIGH)
+    selectedGender = 2;
+
+  if(selectedGender == gender)
+  {
+      printOnLcd("Richtig!");
+      needNewWord = true;
+      delay(1000);
+  }
+  else if(selectedGender != -1)
+  {
+      printOnLcd("Nein");
+      delay(1000);
+      printOnLcd(currentWord);
+  }
+  
+  delay(50);
 }
+

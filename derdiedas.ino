@@ -88,7 +88,7 @@ void loop() {
     printOnLcd(currentWord);
     needNewWord = false;
   }
-  int selectedGender = -1;
+  byte selectedGender = -1;
   if (digitalRead(derPin) == HIGH)
     selectedGender = 0;
   else if (digitalRead(diePin) == HIGH)

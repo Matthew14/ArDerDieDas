@@ -69,7 +69,7 @@ void printOnLcd(char * toPrint)
     display.setCursor(38, 5);
     display.print("Streak: ");
     display.print(correctStreak);
-    display.setTextSize(2);
+    display.setTextSize(strlen(toPrint) > 9 ? 1 : 2);    
     display.setCursor(20, 30);
     display.print(toPrint);
     display.display();

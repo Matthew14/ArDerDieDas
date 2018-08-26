@@ -1,43 +1,56 @@
-#include <LiquidCrystal_I2C.h>
+#include <Adafruit_SSD1306.h>
 
 const int derPin = 5;
 const int diePin = 6;
 const int dasPin = 7;
 
-const String derWords[] = {"Hund", "Mann", "Schlussel", "Computer", "Artz"};
-const String dieWords[] = {"Arbeit", "Frau", "Zeit", "Wohnung"};
-const String dasWords[] = {"Baby", "Auto", "Kind", "Fleisch", "Land", "Kino", "Handy"};//, "Wörterbuch"};
-int noDer = sizeof(derWords);
-int noDie = sizeof(dieWords);
-int noDas = sizeof(dasWords);
+const char* derWords[] = {"Hund", "Mann", "Schlussel", "Computer", "Artz", "Fernseher"};
+const char* dieWords[] = {"Arbeit", "Frau", "Zeit", "Wohnung", "Mutter"};
+const char* dasWords[] = {"Baby", "Auto", "Kind", "Fleisch", "Land", "Kino", "Handy"};//, "Wörterbuch"};
+
+int noDer = 6;
+int noDie = 5;
+int noDas = 7;
 
 bool needNewWord = true;
-String currentWord="";
+char * currentWord="";
 int gender;
 
-LiquidCrystal_I2C lcd(0x3F, 16, 4);
-
+Adafruit_SSD1306 display(4);
 
 void setup() {
+  //Pins
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(dasPin, INPUT);
+  pinMode(derPin, INPUT);
+  pinMode(diePin, INPUT);
   digitalWrite(LED_BUILTIN, LOW);
+  
+  //Setup display
   Serial.begin(9600);
-  lcd.begin(16, 2);
-  lcd.init();
-  lcd.backlight();
-  lcd.setCursor(0, 0);
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+  display.setTextSize(2);
+  display.setTextColor(WHITE);
+  display.display();
+  delay(2000);
+  
+  //Seed Random
+  randomSeed(analogRead(0));
 }
 
-const String getWordForGender(int gender) {
-
+const char* getWordForGender(int gender) {
+  Serial.print(noDer);
   Serial.print("getting word for: ");
 
   Serial.println(gender);
   
   if (gender == 0)
   {
-      derWords[random(noDer)];  
+     int r = random(noDer);
+    
+     
+     Serial.print(r);
+     return derWords[r];  
   }
   else if (gender == 1)
   {
@@ -51,12 +64,12 @@ const String getWordForGender(int gender) {
   
 }
 
-void printOnLcd(String toPrint)
+void printOnLcd(char * toPrint)
 {
-    lcd.clear();
-    lcd.setCursor(3, 1);
-    lcd.print(toPrint);
-  
+    display.clearDisplay();
+    display.setCursor(20, 30);
+    display.print(toPrint);
+    display.display();
 }
 
 

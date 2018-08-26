@@ -1,20 +1,21 @@
 #include <Adafruit_SSD1306.h>
 
-const int derPin = 5;
-const int diePin = 6;
-const int dasPin = 7;
+const byte derPin = 5;
+const byte diePin = 6;
+const byte dasPin = 7;
 
 const char* derWords[] = {"Hund", "Mann", "Schlussel", "Computer", "Artz", "Fernseher"};
 const char* dieWords[] = {"Arbeit", "Frau", "Zeit", "Wohnung", "Mutter"};
 const char* dasWords[] = {"Baby", "Auto", "Kind", "Fleisch", "Land", "Kino", "Handy"};//, "Wörterbuch"};
 
-int noDer = 6;
-int noDie = 5;
-int noDas = 7;
+const int noDer = 6;
+const int noDie = 5;
+const int noDas = 7;
 
 bool needNewWord = true;
 char * currentWord="";
-int gender;
+byte gender;
+byte correctStreak = 0;
 
 Adafruit_SSD1306 display(4);
 
@@ -29,7 +30,6 @@ void setup() {
   //Setup display
   Serial.begin(9600);
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-  display.setTextSize(2);
   display.setTextColor(WHITE);
   display.display();
   delay(2000);
@@ -59,14 +59,17 @@ const char* getWordForGender(int gender) {
   else if (gender == 2)
   {
     return dasWords[random(noDas)];
-  }
-
-  
+  }  
 }
 
 void printOnLcd(char * toPrint)
 {
     display.clearDisplay();
+    display.setTextSize(1);
+    display.setCursor(38, 5);
+    display.print("Streak: ");
+    display.print(correctStreak);
+    display.setTextSize(2);
     display.setCursor(20, 30);
     display.print(toPrint);
     display.display();
@@ -97,11 +100,13 @@ void loop() {
   {
       printOnLcd("Richtig!");
       needNewWord = true;
+      ++correctStreak;
       delay(1000);
   }
   else if(selectedGender != -1)
   {
       printOnLcd("Nein");
+      correctStreak = 0;
       delay(1000);
       printOnLcd(currentWord);
   }

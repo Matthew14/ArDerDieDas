@@ -8,8 +8,6 @@ with open('worter.csv', 'r') as f, open('der.txt', 'w') as der, open('die.txt', 
 			pass
 		definition = lsplitted[1].strip().replace('"', '').split(' ')[0]
 
-		print(article, wort, definition)
-
 		if article == 'der':
 			der.write('{},{}\n'.format(wort, definition))
 

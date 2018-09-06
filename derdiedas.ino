@@ -73,6 +73,7 @@ void printOnLcd(char * toPrint)
     display.setCursor(20, 30);
     display.print(toPrint);
     display.display();
+    
 }
 
 
@@ -87,8 +88,9 @@ void loop() {
     Serial.println(currentWord);
     printOnLcd(currentWord);
     needNewWord = false;
+    
   }
-  byte selectedGender = -1;
+  int selectedGender = -1;
   if (digitalRead(derPin) == HIGH)
     selectedGender = 0;
   else if (digitalRead(diePin) == HIGH)

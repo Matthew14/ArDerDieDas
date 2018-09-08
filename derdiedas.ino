@@ -1,4 +1,6 @@
-#include <Adafruit_SSD1306.h>
+#include <U8x8lib.h>
+#include <SPI.h>
+
 
 const byte derPin = 5;
 const byte diePin = 6;
@@ -6,19 +8,18 @@ const byte dasPin = 7;
 
 const char* derWords[] = {"Hund", "Mann", "Schlussel", "Computer", "Artz", "Fernseher"};
 const char* dieWords[] = {"Arbeit", "Frau", "Zeit", "Wohnung", "Mutter"};
-const char* dasWords[] = {"Baby", "Auto", "Kind", "Fleisch", "Land", "Kino", "Handy"};//, "Wörterbuch"};
+const char* dasWords[] = {"Baby", "Auto", "Kind", "Fleisch", "Land", "Kino", "Handy", "Wörterbuch"};
 
 const int noDer = 6;
 const int noDie = 5;
-const int noDas = 7;
+const int noDas = 8;
 
 bool needNewWord = true;
 char * currentWord="";
 byte gender;
 byte correctStreak = 0;
 
-Adafruit_SSD1306 display(4);
-
+U8X8_SSD1306_128X64_NONAME_HW_I2C oled(U8X8_PIN_NONE);
 void setup() {
   //Pins
   pinMode(LED_BUILTIN, OUTPUT);
@@ -29,28 +30,21 @@ void setup() {
   
   //Setup display
   Serial.begin(9600);
-  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-  display.setTextColor(WHITE);
-  display.display();
-  delay(2000);
+  oled.begin();
+  oled.setPowerSave(0);
+  oled.setFont(u8x8_font_amstrad_cpc_extended_f);
   
   //Seed Random
   randomSeed(analogRead(0));
 }
 
 const char* getWordForGender(int gender) {
-  Serial.print(noDer);
   Serial.print("getting word for: ");
-
   Serial.println(gender);
   
   if (gender == 0)
   {
-     int r = random(noDer);
-    
-     
-     Serial.print(r);
-     return derWords[r];  
+     return derWords[random(noDer)];  
   }
   else if (gender == 1)
   {
@@ -64,16 +58,15 @@ const char* getWordForGender(int gender) {
 
 void printOnLcd(char * toPrint)
 {
-    display.clearDisplay();
-    display.setTextSize(1);
-    display.setCursor(38, 5);
-    display.print("Streak: ");
-    display.print(correctStreak);
-    display.setTextSize(strlen(toPrint) > 9 ? 1 : 2);    
-    display.setCursor(20, 30);
-    display.print(toPrint);
-    display.display();
-    
+    oled.clearDisplay();
+    //display.setTextSize(1);
+    oled.setCursor(2, 0);
+     //u8x8.drawString(0,0,"Streak: ");
+    oled.print("Streak: ");
+    oled.print(correctStreak);
+    //display.setTextSize(strlen(toPrint) > 9 ? 1 : 2);    
+    oled.drawUTF8(2, 4, toPrint);
+    //display.display();
 }
 
 
@@ -107,6 +100,8 @@ void loop() {
   }
   else if(selectedGender != -1)
   {
+      Serial.print("Selected Gender: ");
+      Serial.println(selectedGender);
       printOnLcd("Nein");
       correctStreak = 0;
       delay(1000);

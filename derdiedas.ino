@@ -1,6 +1,6 @@
 #include <U8x8lib.h>
 #include <SPI.h>
-
+#include <SD.h>
 
 const byte derPin = 5;
 const byte diePin = 6;
@@ -20,6 +20,7 @@ byte gender;
 byte correctStreak = 0;
 
 U8X8_SSD1306_128X64_NONAME_HW_I2C oled(U8X8_PIN_NONE);
+
 void setup() {
   //Pins
   pinMode(LED_BUILTIN, OUTPUT);
@@ -59,14 +60,11 @@ const char* getWordForGender(int gender) {
 void printOnLcd(char * toPrint)
 {
     oled.clearDisplay();
-    //display.setTextSize(1);
     oled.setCursor(2, 0);
-     //u8x8.drawString(0,0,"Streak: ");
+    
     oled.print("Streak: ");
     oled.print(correctStreak);
-    //display.setTextSize(strlen(toPrint) > 9 ? 1 : 2);    
     oled.drawUTF8(2, 4, toPrint);
-    //display.display();
 }
 
 
@@ -110,4 +108,3 @@ void loop() {
   
   delay(50);
 }
-
